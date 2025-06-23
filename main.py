@@ -27,3 +27,15 @@ def buscar_pdf(cnpj: str):
 
 # Montar arquivos estáticos (como a logo)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+from fastapi import HTTPException
+from utils.drive_utils import buscar_boleto_por_cnpj
+
+PASTA_ID_DRIVE = "PASTE_AQUI_O_ID_DA_PASTA"
+
+@app.get("/boleto/{cnpj}")
+def get_boleto(cnpj: str):
+    link = buscar_boleto_por_cnpj(cnpj, PASTA_ID_DRIVE)
+    if not link:
+        raise HTTPException(status_code=404, detail="Boleto não encontrado")
+    return {"link": link}
